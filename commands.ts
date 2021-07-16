@@ -45,19 +45,6 @@ const Commands: ApplicationCommand = {
         },
       ],
     },
-    {
-      name: "close",
-      type: 1,
-      description: "close poll (disable new votes)",
-      options: [
-        {
-          name: "id",
-          type: 3,
-          description: "id of the poll",
-          required: true,
-        },
-      ],
-    },
   ],
 };
 
