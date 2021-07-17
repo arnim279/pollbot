@@ -1,4 +1,4 @@
-const Commands: ApplicationCommand = {
+const Commands = [{
   name: "poll",
   description: " ",
   options: [
@@ -43,24 +43,16 @@ const Commands: ApplicationCommand = {
           description: "fifth option",
           required: false,
         },
+        {
+          name: "end-of-vote",
+          type: 3,
+          description:
+            "datetime at which the poll should end. format: `dd.mm.yy hh:mm` (`yy`, `hh` and `mm` are optional)",
+          required: false,
+        },
       ],
     },
   ],
-};
+}];
 
 console.log(JSON.stringify(Commands));
-
-type ApplicationCommandOption = {
-  name: string;
-  type: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-  description: string;
-  required?: boolean;
-  choices?: (string | number)[];
-  options?: ApplicationCommandOption[];
-};
-
-type ApplicationCommand = {
-  name: string;
-  description: string;
-  options: ApplicationCommandOption[];
-};
