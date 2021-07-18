@@ -6,6 +6,7 @@ create table votes (
 
 create table polls (
   poll_id TEXT PRIMARY KEY UNIQUE,
+  creator_id TEXT,
   option_count int,
   channel_id TEXT,
   message_id TEXT,
