@@ -3,23 +3,23 @@ import { User } from "./user.ts";
 
 export type Interaction = {
   id: string;
-  application_id: string;
+  "application_id": string;
   type: 1 | 2 | 3;
   data?: {
     id: string;
     name: string;
     options?: InteractionDataOption[];
-    custom_id: string;
-    component_type?: 1 | 2 | 3;
+    "custom_id": string;
+    "component_type"?: 1 | 2 | 3;
   };
-  guild_id?: string;
-  channel_id?: string;
+  "guild_id"?: string;
+  "channel_id"?: string;
   member?: {
     user: User;
     nick?: string;
     roles: string[];
-    joined_at: number;
-    premium_since?: number;
+    "joined_at": number;
+    "premium_since"?: number;
     deaf: boolean;
     mute: boolean;
     pending?: boolean;
@@ -44,11 +44,11 @@ export type InteractionResponse = {
     tts?: boolean;
     content?: string;
     embeds?: Embed[];
-    allowed_mentions?: {
+    "allowed_mentions"?: {
       parse: ("roles" | "users" | "everyone")[];
-      roles: string[];
-      users: string[];
-      replied_user: boolean;
+      roles?: string[];
+      users?: string[];
+      "replied_user"?: boolean;
     };
     flags?: number;
     components?: Component[];

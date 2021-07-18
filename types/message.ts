@@ -1,4 +1,5 @@
 export type Message = {
+  id: string;
   tts?: boolean;
   content?: string;
   embeds?: Embed[];

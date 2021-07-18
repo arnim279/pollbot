@@ -7,9 +7,7 @@ export function randomDiscordSquareEmojiList(seed: number, amount: number) {
       "green",
       "purple",
       "red",
-      "white_large",
       "yellow",
-      "black_large",
     ].map((name) => `:${name}_square:`),
     seed,
   );

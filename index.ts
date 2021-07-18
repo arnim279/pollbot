@@ -109,7 +109,7 @@ async function handleRequest(req: ServerRequest) {
       }
       case 3: { //MESSAGE_COMPONENT
         req.respond({
-          body: JSON.stringify(handleComponentInteraction(body)),
+          body: JSON.stringify(await handleComponentInteraction(body)),
           headers: headers(),
         });
         break;

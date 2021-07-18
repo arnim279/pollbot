@@ -1,4 +1,4 @@
-import { db, getJSONFromSQLQuery } from "../lib/database.ts";
+import { getJSONFromSQLQuery, SQLQuery } from "../lib/database.ts";
 import { headers } from "../lib/defaultHeaders.ts";
 
 import { Interaction } from "../types/interaction.ts";
@@ -12,6 +12,8 @@ import { Component, EmbedField } from "../types/message.ts";
 export async function createPoll(
   interaction: Interaction,
 ): Promise<{ error: false | string }> {
+  const lastUpdated = Math.floor(new Date().valueOf() / 1000);
+
   const commandOptions = interaction.data?.options?.[0].options;
 
   const title = commandOptions?.find(((option) => option.name === "title"))
@@ -21,6 +23,7 @@ export async function createPoll(
     ((option) => option.name.startsWith("option-")),
   );
 
+  //sort options, just in case
   options?.sort((a, b) =>
     Number(a.name.split("-")[1]) - Number(b.name.split("-")[1])
   );
@@ -34,9 +37,7 @@ export async function createPoll(
 
   fields?.push({
     name: "\u2800\n0 votes in total",
-    value: `last updated: ${new Date().toLocaleDateString()}, ${
-      new Date().toLocaleTimeString()
-    } CET`,
+    value: `last updated: <t:${lastUpdated}:R>`,
   });
 
   const components: Component[] = [
@@ -77,12 +78,6 @@ export async function createPoll(
       components: [
         {
           type: 2,
-          label: "delete this poll",
-          style: 4,
-          custom_id: "poll_delete",
-        },
-        {
-          type: 2,
           label: "close this poll",
           style: 4,
           custom_id: "poll_close",
@@ -120,22 +115,22 @@ export async function createPoll(
 
   const newPollID = getJSONFromSQLQuery("SELECT poll_id FROM polls").length;
 
-  console.log("option count:", options?.length);
-
-  db.query(
+  SQLQuery(
     `INSERT INTO polls (
       poll_id,
+      creator_id,
       option_count,
       channel_id,
       message_id,
       last_updated
     )
     VALUES (
-      '${newPollID}', 
+      '${newPollID}',
+      '${interaction.member?.user.id}' ,
       ${options?.length}, 
       '${message.channel_id}', 
       '${message.id}', 
-      ${Math.floor(new Date().valueOf() / 1000)}
+      ${lastUpdated}
     )`,
   );
 

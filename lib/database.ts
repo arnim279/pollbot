@@ -1,7 +1,13 @@
 import { DB as SQLiteDataBase } from "https://deno.land/x/sqlite@v2.4.2/mod.ts";
 import { ColumnName } from "https://deno.land/x/sqlite@v2.4.2/src/rows.ts";
 
-export const db = new SQLiteDataBase("./data.sql");
+import { Poll, Vote } from "../types/custom.ts";
+
+const db = new SQLiteDataBase("./data.sql");
+
+export function SQLQuery(query: string) {
+  return db.query(query);
+}
 
 /**
  * performs a sql query and returns an array of JSON objects like `[ { "column_name": "value" } ]`
@@ -10,14 +16,12 @@ export const db = new SQLiteDataBase("./data.sql");
  */
 export function getJSONFromSQLQuery(
   query: string,
-): Record<string, string | number>[] {
+): Poll[] | Vote[] {
   const queryResponse = db.query(query);
 
   let columns: ColumnName[];
   try {
-    columns = queryResponse.columns().filter((column) =>
-      column.tableName === "votes" || "polls"
-    );
+    columns = queryResponse.columns();
   } catch {
     columns = [];
   }
@@ -30,5 +34,5 @@ export function getJSONFromSQLQuery(
       res[res.length - 1][columns[index].name] = column[index];
     }
   }
-  return res;
+  return res as Poll[] | Vote[];
 }
