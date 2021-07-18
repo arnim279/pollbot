@@ -12,12 +12,12 @@ export type Embed = {
   color?: number;
   footer?: {
     text: string;
-    icon_url?: string;
+    "icon_url"?: string;
   };
   author?: {
     name?: string;
     url?: string;
-    icon_url?: string;
+    "icon_url"?: string;
   };
   fields?: EmbedField[];
 };
@@ -30,7 +30,7 @@ export type EmbedField = {
 
 export type Component = {
   type: 1 | 2 | 3;
-  custom_id?: string;
+  "custom_id"?: string;
   disabled?: boolean;
   style?: 1 | 2 | 3 | 4 | 5;
   label?: string;

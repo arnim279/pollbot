@@ -9,6 +9,5 @@ create table polls (
   option_count int,
   channel_id TEXT,
   message_id TEXT,
-  last_updated bigint,
-  vote_end bigint
+  last_updated bigint
 );

@@ -16,7 +16,7 @@ export function getJSONFromSQLQuery(
   let columns: ColumnName[];
   try {
     columns = queryResponse.columns().filter((column) =>
-      column.tableName === "votes"
+      column.tableName === "votes" || "polls"
     );
   } catch {
     columns = [];

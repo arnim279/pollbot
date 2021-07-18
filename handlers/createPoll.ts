@@ -1,6 +1,5 @@
 import { db, getJSONFromSQLQuery } from "../lib/database.ts";
 import { headers } from "../lib/defaultHeaders.ts";
-import { getDate } from "../lib/getDate.ts";
 
 import { Interaction } from "../types/interaction.ts";
 import { Component, EmbedField } from "../types/message.ts";
@@ -11,26 +10,12 @@ import { Component, EmbedField } from "../types/message.ts";
  * @returns discord error code or `false`
  */
 export async function createPoll(
-  //deno-lint-ignore no-explicit-any
   interaction: Interaction,
-): Promise<{ error: false | number | string }> {
-  const newPollID = await getJSONFromSQLQuery("SELECT poll_id FROM polls")
-    .length;
-
+): Promise<{ error: false | string }> {
   const commandOptions = interaction.data?.options?.[0].options;
 
-  let title = commandOptions?.find(((option) => option.name === "title"))
+  const title = commandOptions?.find(((option) => option.name === "title"))
     ?.value;
-  const rawDate = commandOptions?.find(
-    ((option) => option.name === "end-of-vote"),
-  )
-    ?.value?.toString();
-
-  const date = rawDate ? getDate(rawDate) : null;
-
-  if (typeof date === "string") {
-    return { error: "wrong-date-format: " + date };
-  }
 
   const options = commandOptions?.filter(
     ((option) => option.name.startsWith("option-")),
@@ -57,7 +42,7 @@ export async function createPoll(
   const components: Component[] = [
     {
       type: 1,
-      components: options?.map((option, index): Component => ({
+      components: options?.map((_option, index): Component => ({
         type: 2,
         label: String(index + 1),
         style: 1,
@@ -119,11 +104,9 @@ export async function createPoll(
               interaction.member?.user.id
             }/${interaction.member?.user.avatar}`,
           },
-          title: title +
-            (rawDate ? ` (closes ${date?.toLocaleString()} CET)` : ""),
+          title: title,
           color: 5793266, //Blurple
           fields: fields,
-          timestamp: new Date().toISOString(),
         }],
         components: components,
       }),
@@ -132,9 +115,29 @@ export async function createPoll(
   ).then((r) => r.json());
 
   if (message.code && message.message) {
-    console.log(message.message);
-    return { error: message.code };
+    return { error: `${message.message} (${message.code})` };
   }
+
+  const newPollID = getJSONFromSQLQuery("SELECT poll_id FROM polls").length;
+
+  console.log("option count:", options?.length);
+
+  db.query(
+    `INSERT INTO polls (
+      poll_id,
+      option_count,
+      channel_id,
+      message_id,
+      last_updated
+    )
+    VALUES (
+      '${newPollID}', 
+      ${options?.length}, 
+      '${message.channel_id}', 
+      '${message.id}', 
+      ${Math.floor(new Date().valueOf() / 1000)}
+    )`,
+  );
 
   return { error: false };
 }

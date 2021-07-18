@@ -43,13 +43,6 @@ const Commands = [{
           description: "fifth option",
           required: false,
         },
-        {
-          name: "end-of-vote",
-          type: 3,
-          description:
-            "datetime at which the poll should end. format: `dd.mm.yy hh:mm` (`yy`, `hh` and `mm` are optional)",
-          required: false,
-        },
       ],
     },
   ],

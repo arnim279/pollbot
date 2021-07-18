@@ -67,47 +67,28 @@ async function handleRequest(req: ServerRequest) {
         const subcommand = body.data.options[0].name;
         switch (subcommand) {
           case "create": {
-            req.respond({ //initial "working on it" response
+            req.respond({ //DEFERRED_CHANNEL_MESSAGE
               body: JSON.stringify({
-                type: 4,
-                data: {
-                  content: `working on it...`,
-                  flags: 64,
-                },
+                type: 5,
+                data: { flags: 64 },
               }),
               headers: headers(),
             });
+
             const { error } = await createPoll(body);
 
-            if (error) { //patch message to error
-              fetch(
-                `https://discord.com/api/v9/webhooks/${body.application_id}/${body.token}/messages/@original`,
-                {
-                  method: "PATCH",
-                  body: JSON.stringify({
-                    content: `Error: ${
-                      error == 50001
-                        ? "no permission to send messages in this channel, contact server staff"
-                        : typeof error === "string"
-                        ? error
-                        : "unknown error"
-                    }`,
-                  }),
-                  headers: headers(true),
-                },
-              );
-            } else { //patch message to success
-              fetch(
-                `https://discord.com/api/v9/webhooks/${body.application_id}/${body.token}/messages/@original`,
-                {
-                  method: "PATCH",
-                  body: JSON.stringify({
-                    content: "successfully created poll :bar_chart:",
-                  }),
-                  headers: headers(true),
-                },
-              );
-            }
+            //patch message
+            fetch(
+              `https://discord.com/api/v9/webhooks/${body.application_id}/${body.token}/messages/@original`,
+              {
+                method: "PATCH",
+                body: JSON.stringify({
+                  content: error || "successfully created poll :bar_chart:",
+                }),
+                headers: headers(true),
+              },
+            );
+
             break;
           }
           default: //unknown message
