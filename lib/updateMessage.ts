@@ -12,7 +12,7 @@ export async function updateMessage( pollID: string, shouldClose = false ): Prom
 
 
   //last updated: less than 5 seconds ago
-  if (poll.last_updated > Math.floor(new Date().valueOf() / 1000) - 5 && shouldClose === false)  {
+  if (poll.last_updated > Math.floor(new Date().valueOf() / 1000) - 2 && shouldClose === false)  {
     return { type: 7, data: {} };
   }
 

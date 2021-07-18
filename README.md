@@ -33,7 +33,22 @@ dependencies:
 
 #### set the database up
 
-see [this script](./scripts/createTables.sql)
+```sql
+create table votes (
+  poll_id TEXT,
+  user_id TEXT,
+  chosen_option int
+);
+
+create table polls (
+  poll_id TEXT PRIMARY KEY UNIQUE,
+  creator_id TEXT,
+  option_count int,
+  channel_id TEXT,
+  message_id TEXT,
+  last_updated bigint
+);
+```
 
 ### start
 
