@@ -2,7 +2,7 @@ import { getJSONFromSQLQuery, SQLQuery } from "../lib/database.ts";
 import { headers } from "../lib/defaultHeaders.ts";
 
 import { Interaction } from "../types/interaction.ts";
-import { Component, EmbedField } from "../types/message.ts";
+import { Component, Embed, EmbedField } from "../types/message.ts";
 
 /**
  * sends a message including the embed and components to vote
@@ -92,23 +92,29 @@ export async function createPoll(
     },
   ];
 
+  const embeds: Embed[] = [{
+    author: {
+      name: `poll by ${interaction.member?.user.username}`,
+      url: `https://discordapp.com/users/${interaction.member?.user.id}`,
+      icon_url: `https://cdn.discordapp.com/avatars/${
+        interaction.member?.user.id
+      }/${interaction.member?.user.avatar}`,
+    },
+    title: title as string,
+    color: 5793266, //Blurple
+    fields: fields,
+    footer: {
+      text:
+        'the poll may not be updated instantly, just wait a few seconds or press the "refresh data" button',
+    },
+  }];
+
   const message = await fetch(
     `https://discord.com/api/v9/channels/${interaction.channel_id}/messages`,
     {
       method: "POST",
       body: JSON.stringify({
-        embeds: [{
-          author: {
-            name: `poll by ${interaction.member?.user.username}`,
-            url: `https://discordapp.com/users/${interaction.member?.user.id}`,
-            icon_url: `https://cdn.discordapp.com/avatars/${
-              interaction.member?.user.id
-            }/${interaction.member?.user.avatar}`,
-          },
-          title: title,
-          color: 5793266, //Blurple
-          fields: fields,
-        }],
+        embeds: embeds,
         components: components,
       }),
       headers: headers(true),
