@@ -23,6 +23,10 @@ export async function createPoll(
     ((option) => option.name.startsWith("option-")),
   );
 
+  const showResultsImmediately = commandOptions?.find((option) =>
+    option.name === "show-results-immediately"
+  )?.value;
+
   //sort options, just in case
   options?.sort((a, b) =>
     Number(a.name.split("-")[1]) - Number(b.name.split("-")[1])
@@ -31,7 +35,9 @@ export async function createPoll(
   const fields: EmbedField[] = options?.map(
     ((option, index) => ({
       name: `option ${index + 1}: ${option.value}`,
-      value: "0 votes (0%)",
+      value: showResultsImmediately
+        ? "0 votes (0%)"
+        : "results aren't visible until the poll is over",
     })),
   ) as EmbedField[];
 
@@ -118,6 +124,7 @@ export async function createPoll(
   SQLQuery(
     `INSERT INTO polls (
       poll_id,
+      poll_type,
       creator_id,
       option_count,
       channel_id,
@@ -126,6 +133,7 @@ export async function createPoll(
     )
     VALUES (
       '${newPollID}',
+      ${showResultsImmediately ? 0 : 1},
       '${interaction.member?.user.id}' ,
       ${options?.length}, 
       '${message.channel_id}', 

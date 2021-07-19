@@ -14,7 +14,7 @@ export const config = JSON.parse(
   new TextDecoder().decode(await Deno.readFile("./config.json")),
 );
 
-listenAndServe(":80", handleRequest);
+listenAndServe(`:${!isNaN(config.port) ? config.port : 80}`, handleRequest);
 console.log("server ready, listening on port 80");
 
 async function handleRequest(req: ServerRequest) {

@@ -46,8 +46,8 @@ export async function updateMessage( pollID: string, shouldClose = false ): Prom
     if (isNaN(percentage)) percentage = 0
     return {
       name: field.name,
-      value: colors[index].repeat(Math.floor(percentage / 100 * 20)) +
-        `\n${votesForOption} votes (${percentage}%)`,
+      value: poll.poll_type === 0 || shouldClose ?  colors[index].repeat(Math.floor(percentage / 100 * 20)) +
+        `\n${votesForOption} votes (${percentage}%)` : "results aren't visible until the poll is over",
     };
   });
 

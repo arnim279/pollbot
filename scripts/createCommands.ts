@@ -43,6 +43,13 @@ const Commands = [{
           description: "fifth option",
           required: false,
         },
+        {
+          name: "show-results-immediately",
+          type: 5,
+          description:
+            "whether the voting result should be available immediately or only after the poll is closed",
+          required: false,
+        },
       ],
     },
   ],
