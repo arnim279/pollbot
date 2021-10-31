@@ -1,58 +1,30 @@
-# Pollbot
+# pollbot
 
----
+a simple discord that allows creating polls  
+[invite to your server](https://discord.com/api/oauth2/authorize?client_id=858402957966835762&permissions=2048&scope=bot%20applications.commands)
 
-runs the http server that listens for discord interactions
-
-### info
-
-```yml
-version: 1.0
-lastupdate: 18.7.2021
-defaultport: 80
-dependencies:
-  - discord api v9
-  - deno 1.10.3
-```
+<!-- TODO: preview gif -->
 
 ### setup
 
-#### neccessary files:
+you need to create the config file since it isn't tracked with git.
 
-- `data.sql`: just create it, the server will fill it
-- `config.json`:
+`./config.json`:
 
-```json
+```js
 {
-  "port": "port on which the api should listen",
-  "botToken": "your discord bot token here",
-  "applicationID": "discord application id",
-  "publicApplicationKey": "discord public application id"
+  "applicationKey": string, // your bot's public application key
+  "botToken": string, // your bot's secret token
+  "analytics": boolean // whether analytics should be stored
 }
 ```
 
-(can all be found [here](https://discord.com/developers/applications))
+### serving
 
-#### set up the database
-
-```sql
-create table votes (
-  poll_id TEXT,
-  user_id TEXT,
-  chosen_option int
-);
-
-create table polls (
-  poll_id TEXT PRIMARY KEY UNIQUE, 
-  poll_type int, -- 0: normal, 1:vote amount only visible after poll is closed
-  creator_id TEXT,
-  option_count int,
-  channel_id TEXT,
-  message_id TEXT,
-  last_updated bigint
-);
+```bash
+docker compose up -d
 ```
 
-### start
+### license
 
-`deno run --allow-net --allow-read --allow-write index.ts`
+<!-- TODO: add license -->
