@@ -17,7 +17,7 @@ export async function updateMessage(poll_id: number) {
 		[poll_id]
 	);
 
-	const maxEmojis = 30;
+	const maxEmojis = 20;
 	const voteAmount = getJSONFromSQLQuery(
 		'SELECT * FROM votes WHERE poll_id = ? ;',
 		[poll_id]
@@ -40,9 +40,9 @@ export async function updateMessage(poll_id: number) {
 
 					return {
 						name: option.value,
-						value: `${emojis[index].repeat(
-							percentage * maxEmojis
-						)} *(${percentage}%)*`,
+						value: `${emojis[index].repeat(percentage * maxEmojis)} *(${
+							percentage * 100
+						}%)*`,
 					};
 				}),
 			},

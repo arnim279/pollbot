@@ -67,7 +67,9 @@ app.use(async function (ctx) {
 		}
 
 		case gateWayTypes.InteractionType.MessageComponent: {
-			ctx.response.body = await handleComponentInteraction(interaction);
+			ctx.response.body = await handleComponentInteraction(
+				interaction as gateWayTypes.APIMessageComponentGuildInteraction
+			);
 			break;
 		}
 	}

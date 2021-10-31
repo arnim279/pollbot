@@ -95,6 +95,13 @@ export function addVote(vote: Vote) {
 	);
 }
 
+export function deleteVote(vote: Vote) {
+	query('DELETE FROM votes WHERE poll_id = ? AND user_id = ?;', [
+		vote.poll_id,
+		vote.user_id,
+	]);
+}
+
 export function addPollOption(option: PollOption) {
 	query('INSERT OR IGNORE INTO polloptions (poll_id, value) VALUES (?, ?);', [
 		option.poll_id,
