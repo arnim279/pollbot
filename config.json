@@ -1,6 +1,0 @@
-{
-  "port": "port on which the api should listen",
-  "botToken": "your discord bot token here",
-  "applicationID": "discord application id",
-  "publicApplicationKey": "discord public application id"
-}
