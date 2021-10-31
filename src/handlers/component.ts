@@ -1,6 +1,12 @@
 import * as gateWayTypes from 'https://deno.land/x/discord_api_types@0.24.0/payloads/v9/mod.ts';
-import { addVote, deleteVote } from '../lib/database.ts';
+import {
+	addVote,
+	deleteVote,
+	getJSONFromSQLQuery,
+	deletePoll,
+} from '../lib/database.ts';
 import { updateMessage } from '../lib/manageMessage.ts';
+import { Vote, Poll } from '../types.ts';
 
 export async function handleComponentInteraction(
 	interaction: gateWayTypes.APIMessageComponentGuildInteraction
@@ -12,6 +18,23 @@ export async function handleComponentInteraction(
 	switch (type) {
 		case 'vote': {
 			switch (action) {
+				case 'info': {
+					const vote = getJSONFromSQLQuery<Vote>(
+						'SELECT chosen_option FROM votes WHERE poll_id = ? AND user_id = ?;',
+						[poll_id, interaction.member.user.id]
+					)[0];
+
+					return {
+						type: gateWayTypes.InteractionResponseType.ChannelMessageWithSource,
+						data: {
+							content: vote
+								? `you voted for option ${vote.chosen_option + 1}`
+								: "you didn't vote yet",
+							flags: gateWayTypes.MessageFlags.Ephemeral,
+						},
+					};
+				}
+
 				case 'delete': {
 					deleteVote({
 						poll_id,
@@ -53,14 +76,75 @@ export async function handleComponentInteraction(
 		}
 
 		case 'poll': {
-			break;
+			switch (action) {
+				case 'reload': {
+					await updateMessage(parseInt(poll_id));
+
+					return {
+						type: gateWayTypes.InteractionResponseType.UpdateMessage,
+						data: {},
+					};
+				}
+
+				case 'close': {
+					const poll = getJSONFromSQLQuery<Poll>(
+						'SELECT * FROM polls WHERE poll_id = ?;',
+						[parseInt(poll_id)]
+					)[0];
+					if (poll.creator_id !== interaction.member.user.id) {
+						return {
+							type: gateWayTypes.InteractionResponseType
+								.ChannelMessageWithSource,
+							data: {
+								content: "you can't do this",
+								flags: gateWayTypes.MessageFlags.Ephemeral,
+							},
+						};
+					}
+
+					return {
+						type: gateWayTypes.InteractionResponseType.ChannelMessageWithSource,
+						data: {
+							content:
+								'are you sure you want to close this poll? this cannot be undone',
+							components: [
+								{
+									type: 1,
+									components: [
+										{
+											type: 2,
+											label: "i'm sure",
+											custom_id: `${poll_id}_poll_close-confirm`,
+											style: 4,
+										},
+									],
+								},
+							],
+							flags: gateWayTypes.MessageFlags.Ephemeral,
+						},
+					};
+				}
+
+				case 'close-confirm': {
+					await updateMessage(parseInt(poll_id), true);
+					deletePoll(parseInt(poll_id));
+
+					return {
+						type: gateWayTypes.InteractionResponseType.ChannelMessageWithSource,
+						data: {
+							content: 'closed',
+							flags: gateWayTypes.MessageFlags.Ephemeral,
+						},
+					};
+				}
+			}
 		}
 	}
 
 	return {
 		type: gateWayTypes.InteractionResponseType.ChannelMessageWithSource,
 		data: {
-			content: 'component',
+			content: 'unknown interaction',
 			flags: gateWayTypes.MessageFlags.Ephemeral,
 		},
 	};

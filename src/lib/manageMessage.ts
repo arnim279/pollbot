@@ -1,13 +1,13 @@
 import * as restAPITypes from 'https://deno.land/x/discord_api_types@0.24.0/rest/v9/mod.ts';
 import { config } from '../index.ts';
-import { Poll, Vote, PollOption } from '../types.ts';
-import { getJSONFromSQLQuery } from './database.ts';
+import { Poll, PollOption } from '../types.ts';
+import { getJSONFromSQLQuery, query } from './database.ts';
 import { randomDiscordSquareEmojiList } from './randomDiscordSquareEmojiList.ts';
 
 /**
  * @returns the message id
  */
-export async function updateMessage(poll_id: number) {
+export async function updateMessage(poll_id: number, closing = false) {
 	const poll = getJSONFromSQLQuery<Poll>(
 		'SELECT * FROM polls WHERE poll_id = ?;',
 		[poll_id]
@@ -23,12 +23,14 @@ export async function updateMessage(poll_id: number) {
 		[poll_id]
 	).length;
 
+	const last_update = Math.floor(new Date().valueOf() / 1000);
+
 	const emojis = randomDiscordSquareEmojiList(poll_id, options.length);
 
 	const message: restAPITypes.RESTPostAPIChannelMessageJSONBody = {
 		embeds: [
 			{
-				title: poll.title,
+				title: poll.title + closing ? ' -- CLOSED' : '',
 				description: `by ${poll.creator_name}`,
 				color: 5727471, //blurple
 				fields: options.map((option, index) => {
@@ -40,22 +42,30 @@ export async function updateMessage(poll_id: number) {
 
 					return {
 						name: option.value,
-						value: `${emojis[index].repeat(percentage * maxEmojis)} *(${
-							percentage * 100
-						}%)*`,
+						value:
+							poll.poll_type === 0 || closing
+								? `${emojis[index].repeat(percentage * maxEmojis)} *(${
+										percentage * 100
+								  }%)*`
+								: "results aren't visible while the poll is still open",
 					};
 				}),
+				footer: {
+					text: `last updated: <t:${last_update}:R>`,
+				},
 			},
 		],
 		components: [
 			{
 				type: 1,
-				components: options.map((option, index) => ({
-					type: 2,
-					label: option.value || 'option',
-					custom_id: `${poll_id}_vote_${index}`,
-					style: 1,
-				})),
+				components: closing
+					? []
+					: options.map((option, index) => ({
+							type: 2,
+							label: option.value || 'option',
+							custom_id: `${poll_id}_vote_${index}`,
+							style: 1,
+					  })),
 			},
 			{
 				type: 1,
@@ -65,6 +75,7 @@ export async function updateMessage(poll_id: number) {
 						label: 'delete my vote',
 						custom_id: `${poll_id}_vote_delete`,
 						style: 1,
+						disabled: closing,
 					},
 					{
 						type: 2,
@@ -77,6 +88,7 @@ export async function updateMessage(poll_id: number) {
 						label: 'reload data',
 						custom_id: `${poll_id}_poll_reload`,
 						style: 1,
+						disabled: closing,
 					},
 				],
 			},
@@ -88,6 +100,7 @@ export async function updateMessage(poll_id: number) {
 						label: 'close vote',
 						custom_id: `${poll_id}_poll_close`,
 						style: 4,
+						disabled: closing,
 					},
 				],
 			},
@@ -122,6 +135,11 @@ export async function updateMessage(poll_id: number) {
 			body: JSON.stringify(message),
 		}
 	).then(r => r.json())) as restAPITypes.RESTPatchAPIChannelMessageResult;
+
+	query('UPDATE polls SET last_update = ? WHERE poll_id = ?;', [
+		last_update,
+		poll_id,
+	]);
 
 	return id;
 }
