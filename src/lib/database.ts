@@ -9,21 +9,21 @@ export const db = new DB('./data/data.sql');
 export function initDatabase() {
 	db.query(`
     CREATE TABLE IF NOT EXISTS polls (
-      poll_id string PRIMARY KEY UNIQUE AUTOINCREMENT,
-      poll_type number, -- 0: normal, 1:vote amount only visible after poll is closed
-      creator_id string,
-      option_count number,
-      channel_id string,
-      message_id string,
-      last_updated number
+      poll_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      poll_type INTEGER
+      creator_id TEXT,
+      option_count INTEGER,
+      channel_id TEXT,
+      message_id TEXT,
+      last_updated INTEGER
     );
   `);
 
 	db.query(`
     CREATE TABLE IF NOT EXISTS votes (
-      poll_id string,
-      user_id string,
-      chosen_option number,
+      poll_id INTEGER,
+      user_id TEXT,
+      chosen_option INTEGER,
       UNIQUE(user_id, poll_id)
     );
 	`);
