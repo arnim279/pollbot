@@ -91,6 +91,23 @@ async function handleRequest(req: ServerRequest) {
 
             break;
           }
+          case "invite": {
+            req.respond({
+              body: JSON.stringify({
+                type: 4,
+                data: {
+                  content:
+                    "[invite me](https://discord.com/api/oauth2/authorize?client_id=858402957966835762&permissions=2048&scope=bot%20applications.commands)",
+                  flags: 64,
+                  allowed_mentions: { parse: [] },
+                },
+                headers: headers(),
+              })
+            })
+
+            break;
+          }
+            
           default: //unknown message
             req.respond({
               body: JSON.stringify({

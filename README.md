@@ -33,7 +33,7 @@ dependencies:
 
 (can all be found [here](https://discord.com/developers/applications))
 
-#### set the database up
+#### set up the database
 
 ```sql
 create table votes (

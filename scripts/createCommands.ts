@@ -52,6 +52,11 @@ const Commands = [{
         },
       ],
     },
+    {
+      name: "invite",
+      type: 1,
+      description: "invite me to your own server"
+    }
   ],
 }];
 
