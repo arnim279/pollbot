@@ -3,6 +3,7 @@ import {
 	ColumnName,
 	QueryParam,
 } from 'https://deno.land/x/sqlite@v2.4.2/mod.ts';
+import { Poll, Vote, PollOption } from '../types.ts';
 
 export const db = new DB('./data/data.sql');
 
@@ -10,14 +11,23 @@ export function initDatabase() {
 	db.query(`
     CREATE TABLE IF NOT EXISTS polls (
       poll_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      poll_type INTEGER
+      poll_type INTEGER,
+			title TEXT,
       creator_id TEXT,
+			creator_name TEXT,
       option_count INTEGER,
       channel_id TEXT,
       message_id TEXT,
       last_updated INTEGER
     );
   `);
+
+	db.query(`
+    CREATE TABLE IF NOT EXISTS polloptions (
+      poll_id INTEGER,
+			value TEXT
+    );
+	`);
 
 	db.query(`
     CREATE TABLE IF NOT EXISTS votes (
@@ -29,8 +39,8 @@ export function initDatabase() {
 	`);
 }
 
-export function query(query: string) {
-	db.query(query);
+export function query(query: string, values: QueryParam[] = []) {
+	db.query(query, values);
 }
 
 export function getJSONFromSQLQuery<type>(
@@ -57,24 +67,37 @@ export function getJSONFromSQLQuery<type>(
 	return res as unknown[] as type[];
 }
 
-export function addRole(server_id: string, role_id: string, role_name: string) {
-	return db.query(
-		'INSERT OR IGNORE INTO roles (server_id, role_id, role_name) VALUES (?, ?, ?);',
-		[server_id, role_id, role_name]
+export function createPoll(poll: Poll) {
+	query(
+		'INSERT INTO polls (poll_type, title, creator_name, creator_id, option_count, channel_id, message_id, last_updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
+		[
+			poll.poll_type,
+			poll.title,
+			poll.creator_name,
+			poll.creator_id,
+			poll.option_count,
+			poll.channel_id,
+			poll.message_id,
+			poll.last_updated,
+		]
 	);
 }
 
-/**
- * removes a role.
- * @param server_id
- * @param role_id if not given, all roles from this server will be removed
- * @returns
- */
-export function removeRole(server_id: string, role_id?: string) {
-	return role_id
-		? db.query('DELETE FROM roles WHERE server_id = ? AND role_id = ?;', [
-				server_id,
-				role_id,
-		  ])
-		: db.query('DELETE FROM roles WHERE server_id = ?;', [server_id]);
+export function deletePoll(poll_id: number) {
+	query('DELETE polls WHERE poll_id = ?;', [poll_id]);
+	query('DELETE polloptions WHERE poll_id = ?;', [poll_id]);
+}
+
+export function addVote(vote: Vote) {
+	query(
+		'INSERT OR IGNORE INTO votes (poll_id, user_id, chosen_option) VALUES (?, ?, ?);',
+		[vote.poll_id, vote.user_id, vote.chosen_option]
+	);
+}
+
+export function addPollOption(option: PollOption) {
+	query('INSERT OR IGNORE INTO polloptions (poll_id, value) VALUES (?, ?);', [
+		option.poll_id,
+		option.value,
+	]);
 }

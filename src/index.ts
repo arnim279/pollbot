@@ -61,7 +61,7 @@ app.use(async function (ctx) {
 
 		case gateWayTypes.InteractionType.ApplicationCommand: {
 			ctx.response.body = await handleApplicationCommand(
-				interaction as gateWayTypes.APIChatInputApplicationCommandInteraction //this bot doesn't have context menus
+				interaction as gateWayTypes.APIChatInputApplicationCommandGuildInteraction //this bot doesn't have context menus
 			);
 			break;
 		}
