@@ -84,8 +84,8 @@ export function createPoll(poll: Poll) {
 }
 
 export function deletePoll(poll_id: number) {
-	query('DELETE polls WHERE poll_id = ?;', [poll_id]);
-	query('DELETE polloptions WHERE poll_id = ?;', [poll_id]);
+	query('DELETE FROM polls WHERE poll_id = ?;', [poll_id]);
+	query('DELETE FROM polloptions WHERE poll_id = ?;', [poll_id]);
 }
 
 export function addVote(vote: Vote) {

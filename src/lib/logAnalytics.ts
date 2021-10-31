@@ -5,7 +5,9 @@ export async function logAnalytics(interaction: any) {
 			[
 				Math.floor(new Date().valueOf() / 1000),
 				interaction.type,
-				interaction.type === 2
+				interaction.type === 1
+					? ''
+					: interaction.type === 2
 					? `${interaction.data?.name || ''} ${
 							interaction.data?.options?.[0]?.name || ''
 					  }`

@@ -30,7 +30,7 @@ export async function updateMessage(poll_id: number, closing = false) {
 	const message: restAPITypes.RESTPostAPIChannelMessageJSONBody = {
 		embeds: [
 			{
-				title: poll.title + closing ? ' -- CLOSED' : '',
+				title: poll.title + (closing ? ' - CLOSED' : ''),
 				description: `by ${poll.creator_name}`,
 				color: 5727471, //blurple
 				fields: options.map((option, index) => {
@@ -50,23 +50,23 @@ export async function updateMessage(poll_id: number, closing = false) {
 								: "results aren't visible while the poll is still open",
 					};
 				}),
-				footer: {
-					text: `last updated: <t:${last_update}:R>`,
-				},
+				timestamp: new Date().toISOString(),
 			},
 		],
 		components: [
-			{
-				type: 1,
-				components: closing
-					? []
-					: options.map((option, index) => ({
-							type: 2,
-							label: option.value || 'option',
-							custom_id: `${poll_id}_vote_${index}`,
-							style: 1,
-					  })),
-			},
+			...(closing
+				? []
+				: [
+						{
+							type: 1,
+							components: options.map((option, index) => ({
+								type: 2,
+								label: option.value || 'option',
+								custom_id: `${poll_id}_vote_${index}`,
+								style: 1,
+							})),
+						},
+				  ]),
 			{
 				type: 1,
 				components: [
@@ -134,9 +134,14 @@ export async function updateMessage(poll_id: number, closing = false) {
 			},
 			body: JSON.stringify(message),
 		}
-	).then(r => r.json())) as restAPITypes.RESTPatchAPIChannelMessageResult;
+	).then(r =>
+		r.json().then(b => {
+			console.log(JSON.stringify(b));
+			return b;
+		})
+	)) as restAPITypes.RESTPatchAPIChannelMessageResult;
 
-	query('UPDATE polls SET last_update = ? WHERE poll_id = ?;', [
+	query('UPDATE polls SET last_updated = ? WHERE poll_id = ?;', [
 		last_update,
 		poll_id,
 	]);
