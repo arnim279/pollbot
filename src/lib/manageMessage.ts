@@ -19,7 +19,7 @@ export async function updateMessage(poll_id: number, closing = false) {
 
 	const maxEmojis = 20;
 	const voteAmount = getJSONFromSQLQuery(
-		'SELECT * FROM votes WHERE poll_id = ? ;',
+		'SELECT * FROM votes WHERE poll_id = ?;',
 		[poll_id]
 	).length;
 
@@ -50,6 +50,9 @@ export async function updateMessage(poll_id: number, closing = false) {
 								: "results aren't visible while the poll is still open",
 					};
 				}),
+				footer: {
+					text: `${voteAmount} total votes`,
+				},
 				timestamp: new Date().toISOString(),
 			},
 		],
@@ -134,12 +137,7 @@ export async function updateMessage(poll_id: number, closing = false) {
 			},
 			body: JSON.stringify(message),
 		}
-	).then(r =>
-		r.json().then(b => {
-			console.log(JSON.stringify(b));
-			return b;
-		})
-	)) as restAPITypes.RESTPatchAPIChannelMessageResult;
+	).then(r => r.json())) as restAPITypes.RESTPatchAPIChannelMessageResult;
 
 	query('UPDATE polls SET last_updated = ? WHERE poll_id = ?;', [
 		last_update,

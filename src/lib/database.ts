@@ -93,6 +93,10 @@ export function addVote(vote: Vote) {
 		'INSERT OR IGNORE INTO votes (poll_id, user_id, chosen_option) VALUES (?, ?, ?);',
 		[vote.poll_id, vote.user_id, vote.chosen_option]
 	);
+	query(
+		'UPDATE votes SET chosen_option = ? WHERE poll_id = ? AND user_id = ?;',
+		[vote.chosen_option, vote.poll_id, vote.user_id]
+	);
 }
 
 export function deleteVote(vote: Vote) {

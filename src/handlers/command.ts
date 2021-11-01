@@ -20,8 +20,10 @@ export async function handleApplicationCommand(
 				option_count: command.options.filter(o => o.name.startsWith('option-'))
 					.length,
 				poll_type: Number(
-					command.options.find(o => o.name === 'show-results-immediately')
-						?.value || 0
+					!(
+						command.options.find(o => o.name === 'show-results-immediately')
+							?.value ?? true
+					)
 				) as 0 | 1,
 				poll_id: 0, //will be overwritten anyways
 				title: command.options.find(o => o.name === 'title')?.value as string,

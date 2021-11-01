@@ -13,8 +13,6 @@ export async function handleComponentInteraction(
 ): Promise<gateWayTypes.APIInteractionResponse> {
 	let [poll_id, type, action] = interaction.data.custom_id.split('_');
 
-	console.log(parseInt(poll_id));
-
 	switch (type) {
 		case 'vote': {
 			switch (action) {
@@ -67,7 +65,7 @@ export async function handleComponentInteraction(
 					return {
 						type: gateWayTypes.InteractionResponseType.ChannelMessageWithSource,
 						data: {
-							content: `added vote for option ${chosen_option}`,
+							content: `added vote for option ${chosen_option + 1}`,
 							flags: gateWayTypes.MessageFlags.Ephemeral,
 						},
 					};
