@@ -5,8 +5,6 @@
 a simple discord bot for creating polls  
 [invite to your server](https://discord.com/api/oauth2/authorize?client_id=858402957966835762&permissions=2048&scope=bot%20applications.commands)
 
-[showcase](./assets/preview.mp4)
-
 ### files
 
 [`commands.json`](./commands.json): application commands  
