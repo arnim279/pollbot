@@ -15,6 +15,7 @@ export type Poll = {
 
 export type PollOption = {
 	poll_id: number;
+	option_id: number;
 	value: string;
 };
 

@@ -107,8 +107,8 @@ export function deleteVote(vote: Vote) {
 }
 
 export function addPollOption(option: PollOption) {
-	query('INSERT OR IGNORE INTO polloptions (poll_id, value) VALUES (?, ?);', [
-		option.poll_id,
-		option.value,
-	]);
+	query(
+		'INSERT OR IGNORE INTO polloptions (poll_id, option_id, value) VALUES (?, ?, ?);',
+		[option.poll_id, option.option_id, option.value]
+	);
 }

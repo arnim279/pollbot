@@ -53,7 +53,7 @@ export async function updateMessage(poll_id: number, closing = false) {
 				footer: {
 					text: `${voteAmount} total votes`,
 				},
-				timestamp: new Date().toISOString(),
+				timestamp: new Date(last_update).toISOString(),
 			},
 		],
 		components: [
@@ -62,10 +62,10 @@ export async function updateMessage(poll_id: number, closing = false) {
 				: [
 						{
 							type: 1,
-							components: options.map((option, index) => ({
+							components: options.map(option => ({
 								type: 2,
 								label: option.value || 'option',
-								custom_id: `${poll_id}_vote_${index}`,
+								custom_id: `${poll_id}_vote_${option.option_id}`,
 								style: 1,
 							})),
 						},

@@ -35,11 +35,15 @@ export async function handleApplicationCommand(
 				[interaction.channel_id]
 			).at(-1) as Poll;
 
-			for (const option of command.options.filter(o =>
-				o.name.startsWith('option-')
-			)) {
-				addPollOption({ poll_id, value: option.value as string });
-			}
+			command.options
+				.filter(o => o.name.startsWith('option-'))
+				.forEach((option, option_id) => {
+					addPollOption({
+						poll_id,
+						value: option.value as string,
+						option_id,
+					});
+				});
 
 			const message_id = await updateMessage(poll_id);
 
