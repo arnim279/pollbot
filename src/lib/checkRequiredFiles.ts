@@ -14,7 +14,7 @@ export function checkRequiredFiles() {
 		} catch {
 			Deno.writeTextFile(
 				'./data/analytics.csv',
-				'unix_time_secs, interaction_type, interaction_name'
+				'unix_time_secs,interaction_type,interaction_name'
 			);
 		}
 	}
