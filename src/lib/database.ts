@@ -25,6 +25,7 @@ export function initDatabase() {
 	db.query(`
     CREATE TABLE IF NOT EXISTS polloptions (
       poll_id INTEGER,
+			option_id INTEGER,
 			value TEXT
     );
 	`);
